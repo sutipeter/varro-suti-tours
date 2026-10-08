@@ -7,3 +7,14 @@
 
 .place-guide{background:white;border:1px solid var(--line);border-radius:9px;margin-bottom:14px}.place-guide summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:18px;padding:24px}.place-guide summary::-webkit-details-marker{display:none}.place-guide summary b{font:24px 'Playfair Display',Georgia,serif;display:block}.place-guide summary small{display:block;font-size:13px;color:var(--muted);margin-top:5px}.guide-number{font:22px Georgia,serif;color:#7b8e73}.expand{margin-left:auto;font-size:25px}.place-guide[open] .expand{transform:rotate(45deg)}.place-body{padding:0 28px 28px 64px}.place-body p{font-size:16px}.funfact{position:static;inset:auto;width:auto;border:0;display:block;padding:20px;background:#eaf0e5;border-radius:7px;font-size:15px;line-height:1.65}.fact-stat{display:inline-block;padding:7px 13px;background:#183632;color:#f1dcab;border-radius:5px;font-size:14px}.guide-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:28px 0}.guide-facts>div{padding:23px;background:#eaf0e5;border-radius:8px}.guide-facts strong{display:block;font:35px Georgia,serif}.guide-facts span{font-size:13px;display:block;margin-top:7px}@media(max-width:760px){.place-guide summary{padding:18px;gap:12px}.place-guide summary b{font-size:21px}.place-body{padding:0 18px 20px}.guide-facts{grid-template-columns:1fr;gap:9px}.guide-facts>div{display:flex;align-items:center;gap:16px;padding:15px}.guide-facts span{margin:0}}
 @media(max-width:760px){.sidefoot{display:block;margin-top:12px;font-size:0;text-align:right}.sidefoot p{display:none}.sidefoot button{font-size:13px}}
+
+/* A compact, expandable navigation for phones. */
+.menu-toggle{display:none}
+@media(max-width:760px){
+#root>aside{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 14px}
+.menu-toggle{display:flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:8px 13px;border:1px solid var(--line);border-radius:8px;background:#edf1e9;font-size:14px;font-weight:600}
+.menu-icon{font-size:23px;line-height:1;width:22px;text-align:center}
+#mainNavigation{display:none;grid-column:1/-1;margin-top:16px;overflow:visible;gap:5px;border-top:1px solid var(--line);padding-top:12px}
+.menu-open #mainNavigation{display:grid}
+#mainNavigation button{width:100%;min-height:44px;white-space:normal;text-align:left;font-size:15px;padding:11px 14px}
+}

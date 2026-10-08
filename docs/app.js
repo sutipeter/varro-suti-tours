@@ -9,7 +9,18 @@ function showLogin(message=''){clearInterval(heartbeat);state={user:null,stops:[
 window.addEventListener('session-ended',()=>showLogin('A belépés lejárt. Lépj be újra.'));
 async function boot(){try{state=await api('state');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();clearInterval(heartbeat);heartbeat=setInterval(async()=>{if(document.hidden)return;try{await api('state');}catch(e){if(e.status===401||e.status===403){clearSession();showLogin(e.message);}}},60000);}catch(e){clearSession();showLogin(e.message);}}
 function mount(){
-function go(view){if(view==='admin'&&state.user?.role!=='admin')return;document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!==view);document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));history.replaceState(null,'','#'+view);window.scrollTo({top:0,behavior:'smooth'});if(view==='community')guarded(loadPosts);if(view==='admin')guarded(loadAdmin);}
+const navigation=$('aside nav'),sidebar=navigation.closest('aside');
+navigation.id='mainNavigation';navigation.setAttribute('aria-label','Főmenü');
+const menuToggle=document.createElement('button');
+menuToggle.type='button';menuToggle.className='menu-toggle';
+menuToggle.setAttribute('aria-controls','mainNavigation');
+menuToggle.innerHTML='<span class="menu-icon" aria-hidden="true">☰</span><span>Menü</span>';
+navigation.before(menuToggle);
+function setMenu(open){sidebar.classList.toggle('menu-open',open);menuToggle.setAttribute('aria-expanded',String(open));menuToggle.querySelector('.menu-icon').textContent=open?'×':'☰';}
+setMenu(false);
+menuToggle.onclick=()=>setMenu(menuToggle.getAttribute('aria-expanded')!=='true');
+sidebar.onkeydown=e=>{if(e.key==='Escape'&&menuToggle.getAttribute('aria-expanded')==='true'){setMenu(false);menuToggle.focus();}};
+function go(view){if(view==='admin'&&state.user?.role!=='admin')return;const focusMenu=navigation.contains(document.activeElement)&&window.matchMedia('(max-width:760px)').matches;setMenu(false);if(focusMenu)menuToggle.focus();document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!==view);document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));history.replaceState(null,'','#'+view);window.scrollTo({top:0,behavior:'smooth'});if(view==='community')guarded(loadPosts);if(view==='admin')guarded(loadAdmin);}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));document.querySelectorAll('dialog .close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 function tourDays(s){return s.details?'<div class="tourdays">'+s.details+'</div>':'';}
 function renderStops(filter='Mind'){ $('#timeline').innerHTML=state.stops.filter(s=>filter==='Mind'||s.category===filter).map(s=>`<article class="stop"><div class="date">${esc(s.date)}<small>ÁPRILIS</small></div><div class="panel"><span class="tag">${esc(s.category)}</span><h2>${esc(s.title)}</h2><b class="muted">${esc(s.meta)}</b><p>${esc(s.body)}</p>${tourDays(s)}</div></article>`).join(''); }
