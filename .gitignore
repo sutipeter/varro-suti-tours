@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+*.secret*
+*private*
+*.sqlite*
+.DS_Store
+docs/config.local.js

@@ -1,0 +1,3 @@
+project_id = "varro-suti-tours"
+[functions.community]
+verify_jwt = false
