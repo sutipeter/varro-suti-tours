@@ -48,8 +48,8 @@ Deno.serve(async req=>{
   const admin=()=>{if(user.role!=='admin')throw new Problem('Szervezői jogosultság szükséges.',403);};
   const positiveId=()=>{const n=Number(input.id);if(!Number.isSafeInteger(n)||n<1)throw new Problem('Érvénytelen azonosító.');return n;};
   if(action==='state'){
-   const [{data:stops,error:se},{data:page,error:pe}]=await Promise.all([db.from('stops').select('*').order('id'),db.from('site_pages').select('html').eq('id','main').single()]);check(se);check(pe);
-   return reply({user,stops,html:page!.html});
+   const [{data:stops,error:se},{data:page,error:pe},{data:meta,error:me}]=await Promise.all([db.from('stops').select('*').order('id'),db.from('site_pages').select('html').eq('id','main').single(),db.from('site_pages').select('html').eq('id','meta').maybeSingle()]);check(se);check(pe);check(me);
+   return reply({user,stops,html:page!.html,departure:meta?JSON.parse(meta.html).departure:null});
   }
   if(action==='password'){
    const {error}=await db.auth.admin.updateUserById(user.id,{password:password(input.password)});check(error);return reply({ok:true});

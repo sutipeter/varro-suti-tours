@@ -1,3 +1,9 @@
 project_id = "varro-suti-tours"
+[auth]
+site_url = "https://sutipeter.github.io/varro-suti-tours/"
+enable_signup = false
+[auth.email]
+# Keep the email/password provider enabled; auth.enable_signup blocks public signup.
+enable_signup = true
 [functions.community]
 verify_jwt = false
