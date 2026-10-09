@@ -1,3 +1,4 @@
+import {guidePhotos} from './guide-photos.js';
 import {api,configured,hasSession,logout,clearSession} from './session.js';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -13,6 +14,13 @@ window.addEventListener('session-ended',()=>showLogin('A belépés lejárt. Lép
 async function bootPublic(){clearInterval(heartbeat);try{state=await api('publicState');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();}catch(e){showLogin(e.message);}}
 async function boot(){try{state=await api('state');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();clearInterval(heartbeat);heartbeat=setInterval(async()=>{if(document.hidden)return;try{await api('state');}catch(e){if(e.status===401||e.status===403){clearSession();showLogin(e.message);}}},60000);}catch(e){clearSession();showLogin(e.message);}}
 function mount(){
+document.querySelectorAll('.place-guide').forEach(block=>{
+ const photo=guidePhotos[Number(block.querySelector('.guide-number')?.textContent)-1];
+ if(!photo)return;
+ const figure=document.createElement('figure');figure.className='guide-photo';
+ figure.innerHTML=`<img src="${esc(photo.src)}" alt="${esc(photo.caption)}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async"><figcaption>${esc(photo.caption)}<small>Fotó: ${esc(photo.author)} · ${esc(photo.license)}</small><details class="photo-credit"><summary>Képadatok</summary><p>${esc(photo.title)}<br>Forrás: ${esc(photo.source)}<br>Licenc: ${esc(photo.licenseUrl)}<br>A Wikimedia Commons méretezett képe, változatlan képtartalom.</p></details></figcaption>`;
+ block.querySelector('.place-body').prepend(figure);
+});
 const navigation=$('aside nav'),sidebar=navigation.closest('aside');
 navigation.id='mainNavigation';navigation.setAttribute('aria-label','Főmenü');
 const menuToggle=document.createElement('button');

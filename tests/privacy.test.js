@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 const root=new URL('../',import.meta.url),read=p=>readFileSync(new URL(p,root),'utf8');
 test('Pages contains no private itinerary, demo fallback, PHP, or secret',()=>{
- const names=readdirSync(new URL('docs',root));
+ const names=readdirSync(new URL('docs',root),{withFileTypes:true}).filter(entry=>entry.isFile()).map(entry=>entry.name);
  assert(!names.some(n=>/php$|itinerary|private|sqlite|\.sql$/.test(n)));
  const source=names.map(n=>read('docs/'+n)).join('\n');
  for(const word of ['demo-itinerary','service_role','sb_secret_'])assert(!source.includes(word),'Private/secret data in Pages: '+word);
