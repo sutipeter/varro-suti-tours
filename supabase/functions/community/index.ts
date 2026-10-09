@@ -24,6 +24,12 @@ Deno.serve(async req=>{
   let input;try{input=JSON.parse(raw);}catch{throw new Problem('Hibás kérés.');}
   if(!input||typeof input!=='object'||Array.isArray(input))throw new Problem('Hibás kérés.');
   const action=input.action;
+  if(action==='publicState'){
+   const [{data:stops,error:se},{data:page,error:pe},{data:meta,error:me}]=await Promise.all([db.from('stops').select('*').order('id'),db.from('site_pages').select('html').eq('id','main').single(),db.from('site_pages').select('html').eq('id','meta').maybeSingle()]);check(se);check(pe);check(me);
+   // Only the three approved public views are returned. No member or community data.
+   const html=page!.html.replace(/<section\b[^>]*id="(community|packing|admin|settings)"[^>]*>[\s\S]*?<\/section>/g,'');
+   return reply({user:null,stops,html,departure:meta?JSON.parse(meta.html).departure:null});
+  }
   if(action==='login'){
    const login=username(input.username);const secret=typeof input.password==='string'?input.password:'';
    if(!secret||secret.length>256)throw new Problem('Hibás felhasználónév vagy jelszó.',401);

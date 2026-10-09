@@ -18,3 +18,5 @@
 .menu-open #mainNavigation{display:grid}
 #mainNavigation button{width:100%;min-height:44px;white-space:normal;text-align:left;font-size:15px;padding:11px 14px}
 }
+
+.requires-login{color:var(--muted)}.nav-lock{float:right;font-size:11px;margin-left:12px}#backToPublic{margin-top:20px}

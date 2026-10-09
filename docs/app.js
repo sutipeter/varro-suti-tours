@@ -1,12 +1,16 @@
 import {api,configured,hasSession,logout,clearSession} from './session.js';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const publicViews=['home','route','guide'];
+let returnView='home',pendingView=null;
 let state={user:null,stops:[]};
 const loginHTML=$('#root').innerHTML;let heartbeat;
 function notice(t){const el=$('#notice');if(el)el.textContent=t;}
 async function guarded(fn){try{await fn();}catch(e){notice(e.message);}}
-function showLogin(message=''){clearInterval(heartbeat);state={user:null,stops:[]};$('#root').innerHTML=loginHTML;document.title='Varró & Suti Tours · Belépés';history.replaceState(null,'',location.pathname);const form=$('#loginForm');$('#loginMessage').textContent=configured()?'': 'A közösségi oldal előkészítés alatt áll. A belépés az összekapcsolás után lesz elérhető.';form.querySelector('button').disabled=!configured();$('#loginError').textContent=message;form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('button');b.disabled=true;$('#loginError').textContent='';try{await api('login',Object.fromEntries(new FormData(form)));form.reset();await boot();}catch(err){const error=$('#loginError');if(error)error.textContent=err.message;}finally{b.disabled=false;}};}
+function showLogin(message=''){clearInterval(heartbeat);state={user:null,stops:[]};$('#root').innerHTML=loginHTML;document.title='Varró & Suti Tours · Belépés';history.replaceState(null,'','#login');$('#backToPublic').onclick=()=>{history.replaceState(null,'','#'+returnView);bootPublic();};const form=$('#loginForm');$('#loginMessage').textContent=configured()?'': 'A közösségi oldal előkészítés alatt áll. A belépés az összekapcsolás után lesz elérhető.';form.querySelector('button').disabled=!configured();$('#loginError').textContent=message;form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('button');b.disabled=true;$('#loginError').textContent='';try{await api('login',Object.fromEntries(new FormData(form)));form.reset();await boot();}catch(err){const error=$('#loginError');if(error)error.textContent=err.message;}finally{b.disabled=false;}};}
+window.addEventListener('hashchange',()=>{if(location.hash==='#login')showLogin();else if(hasSession())boot();else bootPublic();});
 window.addEventListener('session-ended',()=>showLogin('A belépés lejárt. Lépj be újra.'));
+async function bootPublic(){clearInterval(heartbeat);try{state=await api('publicState');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();}catch(e){showLogin(e.message);}}
 async function boot(){try{state=await api('state');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();clearInterval(heartbeat);heartbeat=setInterval(async()=>{if(document.hidden)return;try{await api('state');}catch(e){if(e.status===401||e.status===403){clearSession();showLogin(e.message);}}},60000);}catch(e){clearSession();showLogin(e.message);}}
 function mount(){
 const navigation=$('aside nav'),sidebar=navigation.closest('aside');
@@ -20,12 +24,22 @@ function setMenu(open){sidebar.classList.toggle('menu-open',open);menuToggle.set
 setMenu(false);
 menuToggle.onclick=()=>setMenu(menuToggle.getAttribute('aria-expanded')!=='true');
 sidebar.onkeydown=e=>{if(e.key==='Escape'&&menuToggle.getAttribute('aria-expanded')==='true'){setMenu(false);menuToggle.focus();}};
-function go(view){if(view==='admin'&&state.user?.role!=='admin')return;const focusMenu=navigation.contains(document.activeElement)&&window.matchMedia('(max-width:760px)').matches;setMenu(false);if(focusMenu)menuToggle.focus();document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!==view);document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));history.replaceState(null,'','#'+view);window.scrollTo({top:0,behavior:'smooth'});if(view==='community')guarded(loadPosts);if(view==='admin')guarded(loadAdmin);}
+function go(view){if(!state.user&&!publicViews.includes(view)){pendingView=view;showLogin();return;}if(publicViews.includes(view))returnView=view;if(view==='admin'&&state.user?.role!=='admin')return;const focusMenu=navigation.contains(document.activeElement)&&window.matchMedia('(max-width:760px)').matches;setMenu(false);if(focusMenu)menuToggle.focus();document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!==view);document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));history.replaceState(null,'','#'+view);window.scrollTo({top:0,behavior:'smooth'});if(view==='community')guarded(loadPosts);if(view==='admin')guarded(loadAdmin);}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));document.querySelectorAll('dialog .close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 function tourDays(s){return s.details?'<div class="tourdays">'+s.details+'</div>':'';}
 function renderStops(filter='Mind'){ $('#timeline').innerHTML=state.stops.filter(s=>filter==='Mind'||s.category===filter).map(s=>`<article class="stop"><div class="date">${esc(s.date)}<small>ÁPRILIS</small></div><div class="panel"><span class="tag">${esc(s.category)}</span><h2>${esc(s.title)}</h2><b class="muted">${esc(s.meta)}</b><p>${esc(s.body)}</p>${tourDays(s)}</div></article>`).join(''); }
 ['Mind','Repülés','Természet','Pihenés','Város'].forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.className=i?'':'active';b.onclick=()=>{$('#filters .active')?.classList.remove('active');b.classList.add('active');renderStops(f);};$('#filters').append(b);});
 document.querySelectorAll('[data-stop]').forEach(b=>b.onclick=()=>{const s=state.stops.find(x=>Number(x.id)===Number(b.dataset.stop));if(!s)return;$('#detailBody').innerHTML=`<span class="eyebrow">ÁPRILIS ${esc(s.date)}.</span><h2>${esc(s.title)}</h2><p>${esc(s.meta)}</p><p>${esc(s.body)}</p>${tourDays(s)}`;$('#detail').showModal();});
+function finishMount(){
+if(state.departure)$('#countdown').textContent=Math.max(0,Math.ceil((Date.parse(state.departure)-Date.now())/86400000));
+$('#identity').textContent=state.user?'Szia, '+state.user.name+'!':'Üdvözlünk az utazásunkon!';
+$('#adminNav').hidden=state.user?.role!=='admin';
+$('#account').textContent=state.user?'Kijelentkezés':'Belépés';
+$('#account').onclick=async()=>{if(state.user){await logout();pendingView=null;history.replaceState(null,'','#'+returnView);await bootPublic();}else{pendingView=null;showLogin();}};
+if(!state.user)navigation.querySelectorAll('[data-view]').forEach(b=>{if(!publicViews.includes(b.dataset.view)){b.classList.add('requires-login');b.setAttribute('aria-label',b.textContent.trim()+' – belépés szükséges');const lock=document.createElement('span');lock.className='nav-lock';lock.textContent='🔒';lock.setAttribute('aria-hidden','true');b.append(lock);}});
+renderStops();const view=pendingView&&state.user?pendingView:location.hash.slice(1);pendingView=null;go(['home','route','community','guide','packing','settings','admin'].includes(view)?view:'home');
+}
+if(!state.user){finishMount();return;}
 $('#postForm').onsubmit=e=>{e.preventDefault();guarded(async()=>{if(!state.user)return showLogin();await api('post',{body:$('#post').value});$('#post').value='';await loadPosts();});};
 async function loadPosts(){if(!state.user){$('#posts').innerHTML='<div class="panel"><h2>A beszélgetés a csapaté.</h2><p>Lépj be, hogy elolvasd és megoszd a bejegyzéseket.</p></div>';return;}const {posts}=await api('posts');$('#posts').innerHTML=posts.length?posts.map(p=>`<article class="panel"><div class="posthead"><span class="avatar">${esc(p.name.slice(0,1).toUpperCase())}</span><div><b>${esc(p.name)}</b><div class="muted">${esc(p.created)} · budapesti idő ${Number(p.pinned)?' · Kiemelt szervezői bejegyzés':''}</div></div></div><p class="postbody">${esc(p.body)}</p><div class="actions"><button data-action="like" data-id="${p.id}">${p.liked?'♥':'♡'} ${p.likes} kedvelés</button>${state.user.role==='admin'?`<button data-action="pin" data-id="${p.id}">${Number(p.pinned)?'Kiemelés visszavonása':'Kiemelés'}</button>`:''}${state.user.role==='admin'||p.user_id===state.user.id?`<button data-action="delete" data-id="${p.id}">Törlés</button>`:''}</div><div class="comments">${p.comments.map(c=>`<div class="comment"><b>${esc(c.name)}</b><p>${esc(c.body)}</p></div>`).join('')}</div><form class="commentform" data-id="${p.id}"><input aria-label="Hozzászólás" name="body" required maxlength="2000" placeholder="Szólj hozzá…"><button class="primary">Küldés</button></form></article>`).join(''):'<div class="panel"><h2>Itt kezdődik a beszélgetés.</h2><p>Még nincs bejegyzés. Köszönj be a csapatnak!</p></div>';}
 $('#posts').onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;if(b.dataset.action==='delete'&&!confirm('Törlöd ezt a bejegyzést és a hozzászólásait?'))return;guarded(async()=>{await api(b.dataset.action,{id:Number(b.dataset.id)});await loadPosts();});};
@@ -44,7 +58,6 @@ $('#editForm').onsubmit=e=>{e.preventDefault();guarded(async()=>{await api('edit
 $('#account').onclick=async()=>{await logout();showLogin();};
 $('#passwordForm').onsubmit=e=>{e.preventDefault();guarded(async()=>{const value=$('#newPassword').value;if(value!==$('#confirmPassword').value)throw Error('A két jelszó nem egyezik.');await api('password',{password:value});e.target.reset();notice('A jelszavadat módosítottuk.');});};
 
-if(state.departure)$('#countdown').textContent=Math.max(0,Math.ceil((Date.parse(state.departure)-Date.now())/86400000));
-$('#identity').textContent='Szia, '+state.user.name+'!';$('#adminNav').hidden=state.user.role!=='admin';renderStops();const view=location.hash.slice(1);go(['home','route','community','guide','packing','settings','admin'].includes(view)?view:'home');
+finishMount();
 }
-if(configured()&&hasSession())boot();else showLogin();
+if(configured()&&hasSession())boot();else if(configured()&&location.hash!=='#login')bootPublic();else showLogin();
