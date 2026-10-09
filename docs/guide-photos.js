@@ -12,7 +12,7 @@ export const guidePhotos = [
   },
   {
     "src": "images/morondava.jpg",
-    "caption": "Baobabfák Morondava közelében",
+    "caption": "Baobabfa Morondava közelében",
     "author": "Bernard Gagnon",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
