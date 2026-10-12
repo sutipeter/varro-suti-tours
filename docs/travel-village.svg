@@ -1,8 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="90" viewBox="0 0 900 90">
-<defs><g id="palm"><path d="M0 0Q5-18 0-39" fill="none" stroke="#52796a" stroke-width="3"/><path d="M0-39Q-14-51-24-34Q-10-39 0-39Q-6-57 6-59Q4-46 0-39Q16-53 27-36Q13-41 0-39Q17-40 19-24Q10-34 0-39Q-12-39-15-25Q-14-38 0-39" fill="#52796a"/></g><g id="house"><path fill="#52796a" d="M-17 0V-26H17V0Z"/><path fill="#52796a" d="M-23-25L0-43L23-25Z"/></g></defs>
-<path d="M0 69Q110 51 230 68T450 65T680 66T900 69V90H0Z" fill="#94b3a1"/>
-<use href="#palm" x="65" y="66"/><use href="#palm" x="98" y="69" transform="translate(24 13) scale(.8)"/>
-<use href="#house" x="260" y="67"/><use href="#house" x="301" y="70"/>
-<use href="#palm" x="370" y="74"/><use href="#house" x="610" y="65"/><use href="#palm" x="663" y="67"/><use href="#palm" x="803" y="73"/>
-<path d="M0 78H900" stroke="#94b3a1" stroke-width="7"/>
+<defs>
+<g id="palm" fill="#52796a"><path d="M-2 0Q4-26-2-53L0-54Q9-28 2 0Z"/><path d="M-1-53Q-19-64-31-44Q-21-55-3-53Q-22-54-25-34Q-18-48-1-53Q-8-69 7-74Q-2-62 0-53Q16-69 31-53Q18-61 0-53Q23-58 29-36Q19-51 0-53Q12-49 14-30Q9-46-1-53Z"/><path d="M-3-53L-23-46M-2-53L-17-38M1-54L18-54M2-53L23-43" stroke="#52796a" stroke-width="1"/></g>
+<g id="lodge" fill="#52796a"><path d="M-32 0V-21H32V0H23V-18H21V0H-20V-18H-22V0ZM-38-20L-22-34H15L39-20Z"/><path d="M-29-26L-20-38H10L22-30H-18Z"/><path d="M-34-20V1H-32V-20M31-20V1H33V-20"/><path d="M-21-4H23V-2H-21Z"/></g>
+</defs>
+<path d="M0 76Q80 65 180 71T370 70T560 71T750 70T900 76V90H0Z" fill="#94b3a1"/>
+<use href="#palm" transform="translate(75 72) rotate(-7) scale(.79)"/><use href="#palm" transform="translate(110 74) rotate(12) scale(.6)"/>
+<use href="#lodge" transform="translate(283 73) scale(.88)"/><use href="#lodge" transform="translate(343 74) scale(.56)"/>
+<use href="#palm" transform="translate(407 73) rotate(-9) scale(.72)"/>
+<use href="#lodge" transform="translate(618 74) scale(.7)"/><use href="#palm" transform="translate(685 72) rotate(8) scale(.9)"/>
+<path d="M777 74Q775 59 780 48Q780 63 782 74ZM781 51Q768 45 762 54Q774 50 781 54Q788 40 799 47Q788 47 781 54Q794 50 801 60Q790 56 781 55Z" fill="#52796a"/>
+<path d="M0 80H900" stroke="#a2bcac" stroke-width="2"/>
 </svg>

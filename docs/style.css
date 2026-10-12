@@ -45,10 +45,10 @@ main>header{height:150px;align-items:flex-start;padding-top:22px}
 .header-journey{position:absolute;inset:auto 0 0;height:92px;pointer-events:none;z-index:-2;overflow:hidden}
 .header-journey>span{position:absolute;display:block}
 .journey-hills,.journey-village{left:0;bottom:16px;width:calc(100% + 900px);height:90px;background-repeat:repeat-x;background-size:900px 90px;animation:journey-drift 65s linear infinite}
-.journey-hills{background-image:url('travel-hills.svg?v=silhouette');opacity:.8}
-.journey-village{background-image:url('travel-village.svg?v=silhouette');animation-duration:38s;bottom:12px}
-.journey-car{left:28%;bottom:19px;width:40px;height:22px;background:url('travel-car.svg?v=silhouette') center/contain no-repeat;animation:journey-drive 3s ease-in-out infinite}
-.journey-boat{left:78%;bottom:0;width:33px;height:38px;background:url('travel-boat.svg?v=silhouette') center/contain no-repeat;transform-origin:50% 90%;animation:journey-sail 4s ease-in-out infinite}
+.journey-hills{background-image:url('travel-hills.svg?v=coast-2');opacity:.8}
+.journey-village{background-image:url('travel-village.svg?v=coast-2');animation-duration:38s;bottom:12px}
+.journey-car{left:28%;bottom:19px;width:40px;height:22px;background:url('travel-car.svg?v=coast-2') center/contain no-repeat;animation:journey-drive 3s ease-in-out infinite}
+.journey-boat{left:78%;bottom:0;width:33px;height:38px;background:url('travel-boat.svg?v=coast-2') center/contain no-repeat;transform-origin:50% 90%;animation:journey-sail 4s ease-in-out infinite}
 @keyframes journey-drift{to{transform:translateX(-900px)}}
 @keyframes journey-drive{0%,100%{transform:translate(0,0)}50%{transform:translate(6px,-1px)}}
 @keyframes journey-sail{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-5px) rotate(5deg)}}
@@ -56,3 +56,11 @@ main>header{height:150px;align-items:flex-start;padding-top:22px}
 @media(prefers-reduced-motion:reduce){.header-journey>span{animation:none}}
 
 .journey-village{opacity:.7}.journey-car{width:32px;height:18px;opacity:.8}.journey-boat{width:27px;height:32px;opacity:.75}.journey-hills{opacity:.55}
+
+/* Low coastal ripples leave the landscape above the waterline. */
+main>header::before{height:17px;bottom:-5px;background-size:var(--wave-width) 17px;opacity:.24;animation-name:coastal-ripple;animation-duration:16s}
+main>header::after{height:21px;bottom:-9px;background-size:var(--wave-width) 21px;opacity:.18;animation-name:coastal-ripple;animation-duration:22s}
+@keyframes coastal-ripple{from{transform:translateX(0)}to{transform:translateX(calc(var(--wave-width) * -1))}}
+.journey-car{width:39px;height:18px;bottom:18px}.journey-boat{width:37px;height:35px;bottom:0;animation-name:coastal-sail;animation-duration:6s}
+@keyframes coastal-sail{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-1.5px) rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){main>header::before,main>header::after,.header-journey>span{animation:none}}
