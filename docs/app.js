@@ -14,6 +14,10 @@ window.addEventListener('session-ended',()=>showLogin('A belépés lejárt. Lép
 async function bootPublic(){clearInterval(heartbeat);try{state=await api('publicState');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();}catch(e){showLogin(e.message);}}
 async function boot(){try{state=await api('state');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();clearInterval(heartbeat);heartbeat=setInterval(async()=>{if(document.hidden)return;try{await api('state');}catch(e){if(e.status===401||e.status===403){clearSession();showLogin(e.message);}}},60000);}catch(e){clearSession();showLogin(e.message);}}
 function mount(){
+const journey=document.createElement('div');journey.className='header-journey';journey.setAttribute('aria-hidden','true');
+journey.innerHTML='<span class="journey-hills"></span><span class="journey-village"></span><span class="journey-car"></span><span class="journey-boat"></span>';
+$('main>header').append(journey);
+
 document.querySelectorAll('.place-guide').forEach(block=>{
  const photo=guidePhotos[Number(block.querySelector('.guide-number')?.textContent)-1];
  if(!photo)return;
