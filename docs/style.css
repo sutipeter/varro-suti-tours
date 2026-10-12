@@ -61,6 +61,6 @@ main>header{height:150px;align-items:flex-start;padding-top:22px}
 main>header::before{height:17px;bottom:-5px;background-size:var(--wave-width) 17px;opacity:.24;animation-name:coastal-ripple;animation-duration:16s}
 main>header::after{height:21px;bottom:-9px;background-size:var(--wave-width) 21px;opacity:.18;animation-name:coastal-ripple;animation-duration:22s}
 @keyframes coastal-ripple{from{transform:translateX(0)}to{transform:translateX(calc(var(--wave-width) * -1))}}
-.journey-car{width:39px;height:18px;bottom:18px}.journey-boat{width:37px;height:35px;bottom:0;animation-name:coastal-sail;animation-duration:6s}
-@keyframes coastal-sail{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-1.5px) rotate(2deg)}}
+.journey-car{width:39px;height:18px;bottom:18px}.journey-boat{width:37px;height:35px;bottom:0;animation-name:coastal-sail;animation-duration:4.8s}
+@keyframes coastal-sail{0%,100%{transform:translate(0,0) rotate(-5deg)}25%{transform:translate(1px,-3px) rotate(-1deg)}50%{transform:translate(2px,-4px) rotate(5deg)}75%{transform:translate(1px,-1px) rotate(1deg)}}
 @media(prefers-reduced-motion:reduce){main>header::before,main>header::after,.header-journey>span{animation:none}}
