@@ -32,10 +32,10 @@
 .place-body .photo-credit p{font-size:11px;overflow-wrap:anywhere;margin:8px 0 0}
 @media(max-width:760px){.guide-photo figcaption{padding:10px 12px}.guide-photo{margin-bottom:18px}}
 
-/* Slow, seamless waves along the bottom of the page header. */
-main>header{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(180deg,transparent 35%,#eaf4ef);padding-inline:12px}
-main>header::before,main>header::after{content:'';position:absolute;left:0;bottom:-8px;width:calc(100% + 1200px);height:42px;background:url('wave.svg') repeat-x left bottom;background-size:1200px 42px;pointer-events:none;z-index:-1;animation:header-wave 38s linear infinite;opacity:.22}
-main>header::after{bottom:-14px;height:48px;background-size:1200px 48px;opacity:.18;animation-duration:53s;animation-direction:reverse;animation-delay:-17s}
-@keyframes header-wave{from{transform:translateX(0)}to{transform:translateX(-1200px)}}
-@media(max-width:760px){main>header{padding-inline:8px}main>header::before{height:28px;background-size:1200px 28px}main>header::after{height:34px;background-size:1200px 34px}}
+/* Two visible wave layers drift and rise independently. */
+main>header{--wave-width:600px;position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(180deg,transparent 25%,#e5f3ed);padding-inline:12px}
+main>header::before,main>header::after{content:'';position:absolute;left:0;bottom:-18px;width:calc(100% + var(--wave-width));height:64px;background:url('wave.svg?v=2') repeat-x left bottom;background-size:var(--wave-width) 64px;pointer-events:none;z-index:-1;animation:header-wave 10s linear infinite;opacity:.38}
+main>header::after{bottom:-23px;height:70px;background-size:var(--wave-width) 70px;opacity:.26;animation-duration:14s;animation-direction:reverse;animation-delay:-6s}
+@keyframes header-wave{0%{transform:translate(0,0)}25%{transform:translate(calc(var(--wave-width) * -.25),-4px)}50%{transform:translate(calc(var(--wave-width) * -.5),0)}75%{transform:translate(calc(var(--wave-width) * -.75),3px)}100%{transform:translate(calc(var(--wave-width) * -1),0)}}
+@media(max-width:760px){main>header{--wave-width:400px;padding-inline:8px}main>header::before{height:48px;background-size:var(--wave-width) 48px;bottom:-15px}main>header::after{height:54px;background-size:var(--wave-width) 54px;bottom:-20px}}
 @media(prefers-reduced-motion:reduce){main>header::before,main>header::after{animation:none}}
