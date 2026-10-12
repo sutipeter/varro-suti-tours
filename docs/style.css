@@ -64,3 +64,9 @@ main>header::after{height:21px;bottom:-9px;background-size:var(--wave-width) 21p
 .journey-car{width:39px;height:18px;bottom:18px}.journey-boat{width:37px;height:35px;bottom:0;animation-name:coastal-sail;animation-duration:4.8s}
 @keyframes coastal-sail{0%,100%{transform:translate(0,0) rotate(-5deg)}25%{transform:translate(1px,-3px) rotate(-1deg)}50%{transform:translate(2px,-4px) rotate(5deg)}75%{transform:translate(1px,-1px) rotate(1deg)}}
 @media(prefers-reduced-motion:reduce){main>header::before,main>header::after,.header-journey>span{animation:none}}
+
+#identity{font-size:22px;line-height:1.35;font-weight:400;letter-spacing:1px;color:var(--muted)}
+#backToPublic{font-size:26px;line-height:1.4;text-align:left}
+.login-art>a{display:block;width:min(400px,90%);border-radius:10px}
+.login-art>a>img{display:block;width:100%;max-width:none}
+@media(max-width:760px){.login-art>a{max-width:230px}#identity{font-size:22px;letter-spacing:.2px}}

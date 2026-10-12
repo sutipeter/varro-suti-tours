@@ -8,12 +8,14 @@ let state={user:null,stops:[]};
 const loginHTML=$('#root').innerHTML;let heartbeat;
 function notice(t){const el=$('#notice');if(el)el.textContent=t;}
 async function guarded(fn){try{await fn();}catch(e){notice(e.message);}}
-function showLogin(message=''){clearInterval(heartbeat);state={user:null,stops:[]};$('#root').innerHTML=loginHTML;document.title='Varró & Suti Tours · Belépés';history.replaceState(null,'','#login');$('#backToPublic').onclick=()=>{history.replaceState(null,'','#'+returnView);bootPublic();};const form=$('#loginForm');$('#loginMessage').textContent=configured()?'': 'A közösségi oldal előkészítés alatt áll. A belépés az összekapcsolás után lesz elérhető.';form.querySelector('button').disabled=!configured();$('#loginError').textContent=message;form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('button');b.disabled=true;$('#loginError').textContent='';try{await api('login',Object.fromEntries(new FormData(form)));form.reset();await boot();}catch(err){const error=$('#loginError');if(error)error.textContent=err.message;}finally{b.disabled=false;}};}
+function showLogin(message=''){clearInterval(heartbeat);state={user:null,stops:[]};$('#root').innerHTML=loginHTML;document.title='Varró & Suti Tours · Belépés';history.replaceState(null,'','#login');$('#loginHome').onclick=e=>{e.preventDefault();pendingView=null;returnView='home';history.replaceState(null,'','#home');if(hasSession())boot();else bootPublic();};$('#backToPublic').onclick=()=>{history.replaceState(null,'','#'+returnView);bootPublic();};const form=$('#loginForm');$('#loginMessage').textContent=configured()?'': 'A közösségi oldal előkészítés alatt áll. A belépés az összekapcsolás után lesz elérhető.';form.querySelector('button').disabled=!configured();$('#loginError').textContent=message;form.onsubmit=async e=>{e.preventDefault();const b=form.querySelector('button');b.disabled=true;$('#loginError').textContent='';try{await api('login',Object.fromEntries(new FormData(form)));form.reset();await boot();}catch(err){const error=$('#loginError');if(error)error.textContent=err.message;}finally{b.disabled=false;}};}
 window.addEventListener('hashchange',()=>{if(location.hash==='#login')showLogin();else if(hasSession())boot();else bootPublic();});
 window.addEventListener('session-ended',()=>showLogin('A belépés lejárt. Lépj be újra.'));
 async function bootPublic(){clearInterval(heartbeat);try{state=await api('publicState');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();}catch(e){showLogin(e.message);}}
 async function boot(){try{state=await api('state');$('#root').innerHTML=state.html;delete state.html;document.title='Varró & Suti Tours · Közös utazás';mount();clearInterval(heartbeat);heartbeat=setInterval(async()=>{if(document.hidden)return;try{await api('state');}catch(e){if(e.status===401||e.status===403){clearSession();showLogin(e.message);}}},60000);}catch(e){clearSession();showLogin(e.message);}}
 function mount(){
+$('main>header>span')?.remove();
+$('.brand').onclick=e=>{e.preventDefault();pendingView=null;go('home');};
 const journey=document.createElement('div');journey.className='header-journey';journey.setAttribute('aria-hidden','true');
 journey.innerHTML='<span class="journey-hills"></span><span class="journey-village"></span><span class="journey-car"></span><span class="journey-boat"></span>';
 $('main>header').append(journey);
@@ -44,7 +46,7 @@ function renderStops(filter='Mind'){ $('#timeline').innerHTML=state.stops.filter
 document.querySelectorAll('[data-stop]').forEach(b=>b.onclick=()=>{const s=state.stops.find(x=>Number(x.id)===Number(b.dataset.stop));if(!s)return;$('#detailBody').innerHTML=`<span class="eyebrow">ÁPRILIS ${esc(s.date)}.</span><h2>${esc(s.title)}</h2><p>${esc(s.meta)}</p><p>${esc(s.body)}</p>${tourDays(s)}`;$('#detail').showModal();});
 function finishMount(){
 if(state.departure)$('#countdown').textContent=Math.max(0,Math.ceil((Date.parse(state.departure)-Date.now())/86400000));
-$('#identity').textContent=state.user?'Szia, '+state.user.name+'!':'Üdvözlünk az utazásunkon!';
+$('#identity').textContent='Üdvözlünk utazási oldalunkon!';
 $('#adminNav').hidden=state.user?.role!=='admin';
 $('#account').textContent=state.user?'Kijelentkezés':'Belépés';
 $('#account').onclick=async()=>{if(state.user){await logout();pendingView=null;history.replaceState(null,'','#'+returnView);await bootPublic();}else{pendingView=null;showLogin();}};
